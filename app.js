@@ -38,9 +38,18 @@ app.post('/fetch', async (req, res) => {
     }).each(function() {
       // Replace text content but not in URLs or attributes
       const text = $(this).text();
-      const newText = text.replace(/Yale/g, 'Fale').replace(/yale/g, 'fale');
-      if (text !== newText) {
-        $(this).replaceWith(newText);
+        // Skip replacement if the text mentions "no Yale references"
+      if (!text.includes('no Yale references')) {
+        const newText = text.replace(/Yale/g, 'Fale').replace(/yale/g, 'fale');
+        if (text !== newText) {
+          $(this).replaceWith(newText);
+        }
+      }
+      else{
+        const newText = text.replace(/Yale/g, 'Fale').replace(/yale/g, 'fale');
+        if (text !== newText) {
+          $(this).replaceWith(newText);
+        }
       }
     });
     
