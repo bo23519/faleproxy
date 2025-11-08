@@ -19,8 +19,9 @@ describe('Integration Tests', () => {
     
     // Create a temporary test app file
     await execAsync('cp app.js app.test.js');
-    await execAsync(`sed -i '' 's/const PORT = 3001/const PORT = ${TEST_PORT}/' app.test.js`);
-    
+    // Fix sed command for Linux
+    await execAsync(`sed -i 's/const PORT = 3001/const PORT = 3099/' app.test.js`);
+
     // Start the test server
     server = require('child_process').spawn('node', ['app.test.js'], {
       detached: true,

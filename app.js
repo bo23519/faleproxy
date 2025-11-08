@@ -45,12 +45,6 @@ app.post('/fetch', async (req, res) => {
           $(this).replaceWith(newText);
         }
       }
-      else{
-        const newText = text.replace(/Yale/g, 'Fale').replace(/yale/g, 'fale');
-        if (text !== newText) {
-          $(this).replaceWith(newText);
-        }
-      }
     });
     
     // Process title separately
