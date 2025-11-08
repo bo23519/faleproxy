@@ -37,8 +37,25 @@ describe('Integration Tests', () => {
   afterAll(async () => {
     // Kill the test server and clean up
     if (server && server.pid) {
-      process.kill(-server.pid);
+      try {
+        // Try to kill the process group (works on Unix-like systems)
+        if (process.platform !== 'win32') {
+          process.kill(-server.pid, 'SIGTERM');
+        } else {
+          // On Windows, just kill the process
+          process.kill(server.pid, 'SIGTERM');
+        }
+      } catch (error) {
+        // If the process group kill fails, try killing just the process
+        try {
+          process.kill(server.pid, 'SIGTERM');
+        } catch (e) {
+          console.error('Failed to kill server process:', e.message);
+        }
+      }
     }
+    // Wait a bit for the server to shut down
+    await new Promise(resolve => setTimeout(resolve, 500));
     await fs.unlink('app.test.js').catch(() => {});
     nock.cleanAll();
     nock.enableNetConnect();
