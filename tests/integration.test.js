@@ -75,4 +75,12 @@ describe('Integration Tests', () => {
     
     expect(response.body.error).toBe('URL is required');
   });
+
+  test('Should serve the main page', async () => {
+    const response = await request(app)
+      .get('/')
+      .expect(200);
+    
+    expect(response.text).toContain('html');
+  });
 });
