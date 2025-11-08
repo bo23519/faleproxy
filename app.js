@@ -32,19 +32,18 @@ app.post('/fetch', async (req, res) => {
     // Use cheerio to parse HTML and selectively replace text content, not URLs
     const $ = cheerio.load(html);
     
-    // Function to replace text but skip URLs and attributes
-    function replaceYaleWithFale(i, el) {
-      if ($(el).children().length === 0 || $(el).text().trim() !== '') {
-        // Get the HTML content of the element
-        let content = $(el).html();
-        
-        // Only process if it's a text node
-        if (content && $(el).children().length === 0) {
-          // Replace Yale with Fale in text content only
-          content = content.replace(/Yale/g, 'Fale').replace(/yale/g, 'fale');
-          $(el).html(content);
-        }
-      }
+    // Helper function to replace Yale with Fale while preserving case
+    function replaceYalePreserveCase(text) {
+      return text.replace(/Yale/gi, (match) => {
+        if (match === 'YALE') return 'FALE';
+        if (match === 'Yale') return 'Fale';
+        if (match === 'yale') return 'fale';
+        // Handle other mixed cases by preserving the pattern
+        return match.split('').map((char, i) => {
+          const faleChar = 'fale'[i];
+          return char === char.toUpperCase() ? faleChar.toUpperCase() : faleChar;
+        }).join('');
+      });
     }
     
     // Process text nodes in the body
@@ -53,14 +52,14 @@ app.post('/fetch', async (req, res) => {
     }).each(function() {
       // Replace text content but not in URLs or attributes
       const text = $(this).text();
-      const newText = text.replace(/Yale/g, 'Fale').replace(/yale/g, 'fale');
+      const newText = replaceYalePreserveCase(text);
       if (text !== newText) {
         $(this).replaceWith(newText);
       }
     });
     
     // Process title separately
-    const title = $('title').text().replace(/Yale/g, 'Fale').replace(/yale/g, 'fale');
+    const title = replaceYalePreserveCase($('title').text());
     $('title').text(title);
     
     return res.json({ 
