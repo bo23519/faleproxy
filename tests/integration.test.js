@@ -17,6 +17,7 @@ describe('Integration Tests', () => {
     // Mock external HTTP requests
     nock.disableNetConnect();
     nock.enableNetConnect('127.0.0.1');
+    nock.enableNetConnect('localhost');
     
     // Create a temporary test app file with modified port (cross-platform)
     const appContent = await fs.readFile('app.js', 'utf8');
